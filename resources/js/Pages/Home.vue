@@ -194,6 +194,18 @@
                         @change="autoStartBreaks($event)"
                     />
                 </div>
+                <hr />
+
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-black font-semibold">
+                        Auto start Pomodoros?
+                    </h1>
+                    <input
+                        type="checkbox"
+                        v-model="settings.auto_start_pomodoros"
+                        @change="autoStartPomodoros($event)"
+                    />
+                </div>
             </div>
         </div>
         <!-- Settings Section End -->
@@ -222,6 +234,7 @@ export default {
                 short_break_time: 0,
                 long_break_time: 0,
                 auto_start_breaks: false,
+                auto_start_pomodoros: false,
             },
         };
     },
@@ -241,7 +254,8 @@ export default {
 
         this.settings.auto_start_breaks =
             localStorage.getItem("auto_start_breaks") || false;
-
+        this.settings.auto_start_pomodoros =
+            localStorage.getItem("auto_start_pomodoros") || false;
         this.updateTime();
     },
 
@@ -272,6 +286,10 @@ export default {
                     return;
                 } else {
                     this.tab = 1;
+
+                    if (this.settings.auto_start_pomodoros) {
+                        this.startTimer();
+                    }
                     this.timeValuesUpdate();
 
                     return;
@@ -363,6 +381,12 @@ export default {
             localStorage.setItem(
                 "auto_start_breaks",
                 this.settings.auto_start_breaks
+            );
+        },
+        autoStartPomodoros(event) {
+            localStorage.setItem(
+                "auto_start_pomodoros",
+                this.settings.auto_start_pomodoros
             );
         },
     },

@@ -21692,7 +21692,8 @@ __webpack_require__.r(__webpack_exports__);
         pomodoro_time: 0,
         short_break_time: 0,
         long_break_time: 0,
-        auto_start_breaks: false
+        auto_start_breaks: false,
+        auto_start_pomodoros: false
       }
     };
   },
@@ -21704,6 +21705,7 @@ __webpack_require__.r(__webpack_exports__);
     this.settings.long_break_time = localStorage.getItem("long_break_time_seconds") || 900;
     this.settings.long_break_time = this.settings.long_break_time / 60;
     this.settings.auto_start_breaks = localStorage.getItem("auto_start_breaks") || false;
+    this.settings.auto_start_pomodoros = localStorage.getItem("auto_start_pomodoros") || false;
     this.updateTime();
   },
   methods: {
@@ -21735,6 +21737,11 @@ __webpack_require__.r(__webpack_exports__);
           return;
         } else {
           this.tab = 1;
+
+          if (this.settings.auto_start_pomodoros) {
+            this.startTimer();
+          }
+
           this.timeValuesUpdate();
           return;
         }
@@ -21804,6 +21811,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     autoStartBreaks: function autoStartBreaks(event) {
       localStorage.setItem("auto_start_breaks", this.settings.auto_start_breaks);
+    },
+    autoStartPomodoros: function autoStartPomodoros(event) {
+      localStorage.setItem("auto_start_pomodoros", this.settings.auto_start_pomodoros);
     }
   }
 });
@@ -21953,6 +21963,20 @@ var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
+var _hoisted_30 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("hr", null, null, -1
+/* HOISTED */
+);
+
+var _hoisted_31 = {
+  "class": "p-4 flex justify-between items-center"
+};
+
+var _hoisted_32 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
+  "class": "text-black font-semibold"
+}, " Auto start Pomodoros? ", -1
+/* HOISTED */
+);
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
 
@@ -22055,7 +22079,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 544
   /* HYDRATE_EVENTS, NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.settings.auto_start_breaks]])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Settings Section End ")], 2
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.settings.auto_start_breaks]])]), _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [_hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "checkbox",
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+      return $data.settings.auto_start_pomodoros = $event;
+    }),
+    onChange: _cache[13] || (_cache[13] = function ($event) {
+      return $options.autoStartPomodoros($event);
+    })
+  }, null, 544
+  /* HYDRATE_EVENTS, NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelCheckbox, $data.settings.auto_start_pomodoros]])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Settings Section End ")], 2
   /* CLASS */
   )], 64
   /* STABLE_FRAGMENT */
