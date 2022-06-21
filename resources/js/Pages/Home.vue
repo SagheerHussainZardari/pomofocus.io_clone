@@ -142,9 +142,10 @@
                             <input
                                 type="number"
                                 maxlength="5"
-                                v-model="time"
+                                @change="pomodoroTimeChanged($event)"
                                 class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
                                 min="0"
+                                :value="settings.pomodoro_time"
                                 minlength="0"
                             />
                         </div>
@@ -198,14 +199,20 @@ export default {
         return {
             settingsShow: false,
             tab: 1,
-            time: 20,
+            time: 300,
             timeShow: "00:00",
             interval: null,
             timmerRunning: false,
+
+            settings: {
+                pomodoro_time: 0,
+            },
         };
     },
 
     mounted() {
+        this.time = localStorage.getItem("pomodoro_time_seconds") || 300;
+        this.settings.pomodoro_time = this.time / 60;
         this.updateTime();
     },
 
@@ -224,8 +231,18 @@ export default {
         updateTime() {
             if (this.time < 0) {
                 clearInterval(this.interval);
-                this.tab = 2;
-                return;
+                this.timmerRunning = false;
+
+                if (this.tab == 1) {
+                    this.tab = 2;
+                    this.timeValuesUpdate();
+                    return;
+                } else {
+                    this.tab = 1;
+                    this.timeValuesUpdate();
+
+                    return;
+                }
             }
             var minutes = this.time / 60;
             var seconds = this.time % 60;
@@ -251,31 +268,38 @@ export default {
                     this.timmerRunning = false;
 
                     this.tab = tab;
-                    if (tab == 1) {
-                        this.time = 20;
-                    }
-                    if (tab == 2) {
-                        this.time = 5;
-                    }
-                    if (tab == 3) {
-                        this.time = 15;
-                    }
-                    this.updateTime();
+                    this.timeValuesUpdate();
                 }
             } else {
                 this.tab = tab;
-                if (tab == 1) {
-                    this.time = 20;
-                }
-                if (tab == 2) {
-                    this.time = 5;
-                }
-                if (tab == 3) {
-                    this.time = 15;
-                }
-
-                this.updateTime();
+                this.timeValuesUpdate();
             }
+        },
+
+        timeValuesUpdate() {
+            if (this.tab == 1) {
+                this.time =
+                    localStorage.getItem("pomodoro_time_seconds") || 300;
+            }
+            if (this.tab == 2) {
+                this.time = 5;
+            }
+            if (this.tab == 3) {
+                this.time = 15;
+            }
+
+            this.updateTime();
+        },
+
+        pomodoroTimeChanged(event) {
+            localStorage.setItem(
+                "pomodoro_time_seconds",
+                event.target.value * 60
+            );
+            this.time = event.target.value * 60;
+            this.settings.pomodoro_time = this.time / 60;
+
+            this.updateTime();
         },
     },
 };

@@ -21684,13 +21684,18 @@ __webpack_require__.r(__webpack_exports__);
     return {
       settingsShow: false,
       tab: 1,
-      time: 20,
+      time: 300,
       timeShow: "00:00",
       interval: null,
-      timmerRunning: false
+      timmerRunning: false,
+      settings: {
+        pomodoro_time: 0
+      }
     };
   },
   mounted: function mounted() {
+    this.time = localStorage.getItem("pomodoro_time_seconds") || 300;
+    this.settings.pomodoro_time = this.time / 60;
     this.updateTime();
   },
   methods: {
@@ -21709,8 +21714,17 @@ __webpack_require__.r(__webpack_exports__);
     updateTime: function updateTime() {
       if (this.time < 0) {
         clearInterval(this.interval);
-        this.tab = 2;
-        return;
+        this.timmerRunning = false;
+
+        if (this.tab == 1) {
+          this.tab = 2;
+          this.timeValuesUpdate();
+          return;
+        } else {
+          this.tab = 1;
+          this.timeValuesUpdate();
+          return;
+        }
       }
 
       var minutes = this.time / 60;
@@ -21735,38 +21749,33 @@ __webpack_require__.r(__webpack_exports__);
           clearInterval(this.interval);
           this.timmerRunning = false;
           this.tab = tab;
-
-          if (tab == 1) {
-            this.time = 20;
-          }
-
-          if (tab == 2) {
-            this.time = 5;
-          }
-
-          if (tab == 3) {
-            this.time = 15;
-          }
-
-          this.updateTime();
+          this.timeValuesUpdate();
         }
       } else {
         this.tab = tab;
-
-        if (tab == 1) {
-          this.time = 20;
-        }
-
-        if (tab == 2) {
-          this.time = 5;
-        }
-
-        if (tab == 3) {
-          this.time = 15;
-        }
-
-        this.updateTime();
+        this.timeValuesUpdate();
       }
+    },
+    timeValuesUpdate: function timeValuesUpdate() {
+      if (this.tab == 1) {
+        this.time = localStorage.getItem("pomodoro_time_seconds") || 300;
+      }
+
+      if (this.tab == 2) {
+        this.time = 5;
+      }
+
+      if (this.tab == 3) {
+        this.time = 15;
+      }
+
+      this.updateTime();
+    },
+    pomodoroTimeChanged: function pomodoroTimeChanged(event) {
+      localStorage.setItem("pomodoro_time_seconds", event.target.value * 60);
+      this.time = event.target.value * 60;
+      this.settings.pomodoro_time = this.time / 60;
+      this.updateTime();
     }
   }
 });
@@ -21882,14 +21891,16 @@ var _hoisted_21 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_22 = ["value"];
+
+var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "",
   "class": "text-gray-400 font-semibold text-sm"
 }, "Short Break", -1
 /* HOISTED */
 );
 
-var _hoisted_23 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "",
   "class": "text-gray-400 font-semibold text-sm"
 }, "Long Break", -1
@@ -21952,18 +21963,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[6] || (_cache[6] = function ($event) {
       return $data.settingsShow = !$data.settingsShow;
     })
-  }, " X ")]), _hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, " X ")]), _hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     maxlength: "5",
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return $data.time = $event;
+    onChange: _cache[7] || (_cache[7] = function ($event) {
+      return $options.pomodoroTimeChanged($event);
     }),
     "class": "flex w-full bg-gray-200 outline-none ring-0 border-0 rounded",
     min: "0",
+    value: $data.settings.pomodoro_time,
     minlength: "0"
-  }, null, 512
-  /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.time]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_22)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     maxlength: "5",
     "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
@@ -21974,7 +21986,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     minlength: "0"
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.short_break]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.short_break]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     maxlength: "5",
     "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
