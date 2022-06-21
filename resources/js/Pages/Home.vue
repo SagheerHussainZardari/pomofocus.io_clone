@@ -130,7 +130,7 @@
                 </div>
                 <hr />
 
-                <div class="p-2">
+                <div class="p-4">
                     <h1 class="text-black font-semibold">Time (minutes)</h1>
                     <div class="grid grid-cols-3 gap-6">
                         <div>
@@ -158,9 +158,10 @@
                             <input
                                 type="number"
                                 maxlength="5"
-                                v-model="short_break"
+                                @change="shortBreakTimeChanged($event)"
                                 class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
                                 min="0"
+                                :value="settings.short_break_time"
                                 minlength="0"
                             />
                         </div>
@@ -173,13 +174,25 @@
                             <input
                                 type="number"
                                 maxlength="5"
-                                v-model="long_break"
+                                @change="longBreakTimeChanged($event)"
+                                :value="settings.long_break_time"
                                 class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
                                 min="0"
                                 minlength="0"
                             />
                         </div>
                     </div>
+                </div>
+
+                <hr />
+
+                <div class="p-4 flex justify-between items-center">
+                    <h1 class="text-black font-semibold">Auto start Breaks?</h1>
+                    <input
+                        type="checkbox"
+                        v-model="settings.auto_start_breaks"
+                        @change="autoStartBreaks($event)"
+                    />
                 </div>
             </div>
         </div>
@@ -197,7 +210,7 @@ export default {
 
     data() {
         return {
-            settingsShow: false,
+            settingsShow: true,
             tab: 1,
             time: 300,
             timeShow: "00:00",
@@ -206,13 +219,29 @@ export default {
 
             settings: {
                 pomodoro_time: 0,
+                short_break_time: 0,
+                long_break_time: 0,
+                auto_start_breaks: false,
             },
         };
     },
 
     mounted() {
-        this.time = localStorage.getItem("pomodoro_time_seconds") || 300;
+        this.time = localStorage.getItem("pomodoro_time_seconds") || 1500;
         this.settings.pomodoro_time = this.time / 60;
+
+        this.settings.short_break_time =
+            localStorage.getItem("short_break_time_seconds") || 300;
+
+        this.settings.short_break_time = this.settings.short_break_time / 60;
+
+        this.settings.long_break_time =
+            localStorage.getItem("long_break_time_seconds") || 900;
+        this.settings.long_break_time = this.settings.long_break_time / 60;
+
+        this.settings.auto_start_breaks =
+            localStorage.getItem("auto_start_breaks") || false;
+
         this.updateTime();
     },
 
@@ -236,6 +265,10 @@ export default {
                 if (this.tab == 1) {
                     this.tab = 2;
                     this.timeValuesUpdate();
+
+                    if (this.settings.auto_start_breaks) {
+                        this.startTimer();
+                    }
                     return;
                 } else {
                     this.tab = 1;
@@ -279,13 +312,15 @@ export default {
         timeValuesUpdate() {
             if (this.tab == 1) {
                 this.time =
-                    localStorage.getItem("pomodoro_time_seconds") || 300;
+                    localStorage.getItem("pomodoro_time_seconds") || 1500;
             }
             if (this.tab == 2) {
-                this.time = 5;
+                this.time =
+                    localStorage.getItem("short_break_time_seconds") || 300;
             }
             if (this.tab == 3) {
-                this.time = 15;
+                this.time =
+                    localStorage.getItem("long_break_time_seconds") || 900;
             }
 
             this.updateTime();
@@ -300,6 +335,35 @@ export default {
             this.settings.pomodoro_time = this.time / 60;
 
             this.updateTime();
+        },
+
+        shortBreakTimeChanged(event) {
+            localStorage.setItem(
+                "short_break_time_seconds",
+                event.target.value * 60
+            );
+
+            this.time = event.target.value * 60;
+            this.settings.short_break_time = this.time / 60;
+            this.updateTime();
+        },
+
+        longBreakTimeChanged(event) {
+            localStorage.setItem(
+                "long_break_time_seconds",
+                event.target.value * 60
+            );
+
+            this.time = event.target.value * 60;
+            this.settings.long_break_time = this.time / 60;
+            this.updateTime();
+        },
+
+        autoStartBreaks(event) {
+            localStorage.setItem(
+                "auto_start_breaks",
+                this.settings.auto_start_breaks
+            );
         },
     },
 };
