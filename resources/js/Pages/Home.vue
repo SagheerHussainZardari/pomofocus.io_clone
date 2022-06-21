@@ -1,5 +1,5 @@
 <template>
-    <Head :title="pomodoro_time_show" />
+    <Head :title="timeShow" />
     <div
         class="w-screen h-screen transition-all duration-500"
         :class="
@@ -32,7 +32,7 @@
         <div class="bg-white bg-opacity-10 rounded-md p-6 w-3/12 mx-auto mt-6">
             <div class="flex justify-center gap-2 w-10/12 mx-auto">
                 <div
-                    @click="tab = 1"
+                    @click="switchTab(1)"
                     :class="
                         tab == 1
                             ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10'
@@ -42,7 +42,7 @@
                     Pomodoro
                 </div>
                 <div
-                    @click="tab = 2"
+                    @click="switchTab(2)"
                     :class="
                         tab == 2
                             ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10'
@@ -52,7 +52,7 @@
                     Short Break
                 </div>
                 <div
-                    @click="tab = 3"
+                    @click="switchTab(3)"
                     :class="
                         tab == 3
                             ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10'
@@ -64,12 +64,12 @@
             </div>
 
             <div class="mt-4 text-white text-[120px] text-center font-bold">
-                {{ pomodoro_time_show }}
+                {{ timeShow }}
             </div>
 
             <div class="text-center">
                 <button
-                    v-if="!pomodoroTimmerRunning"
+                    v-if="!timmerRunning"
                     class="bg-white mx-auto mt-4 rounded-t-md pt-3"
                 >
                     <h1
@@ -142,7 +142,7 @@
                             <input
                                 type="number"
                                 maxlength="5"
-                                v-model="pomodoro_time"
+                                v-model="time"
                                 class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
                                 min="0"
                                 minlength="0"
@@ -196,14 +196,12 @@ export default {
 
     data() {
         return {
-            settingsShow: true,
+            settingsShow: false,
             tab: 1,
-            pomodoro_time: 5,
-            short_break: 0,
-            long_break: 0,
-            pomodoro_time_show: "00:00",
-            pomodoroInterval: null,
-            pomodoroTimmerRunning: false,
+            time: 20,
+            timeShow: "00:00",
+            interval: null,
+            timmerRunning: false,
         };
     },
 
@@ -213,24 +211,24 @@ export default {
 
     methods: {
         startTimer() {
-            this.pomodoroTimmerRunning = true;
+            this.timmerRunning = true;
 
-            this.pomodoroInterval = setInterval(() => {
+            this.interval = setInterval(() => {
                 this.updateTime();
             }, 1000);
         },
         stopTimer() {
-            clearInterval(this.pomodoroInterval);
-            this.pomodoroTimmerRunning = false;
+            clearInterval(this.interval);
+            this.timmerRunning = false;
         },
         updateTime() {
-            if (this.pomodoro_time < 0) {
-                clearInterval(this.pomodoroInterval);
-                alert("Time if finished play sound");
+            if (this.time < 0) {
+                clearInterval(this.interval);
+                this.tab = 2;
                 return;
             }
-            var minutes = this.pomodoro_time / 60;
-            var seconds = this.pomodoro_time % 60;
+            var minutes = this.time / 60;
+            var seconds = this.time % 60;
 
             minutes = Math.floor(minutes);
             seconds = Math.floor(seconds);
@@ -242,8 +240,42 @@ export default {
                 seconds = "0" + seconds;
             }
 
-            this.pomodoro_time_show = "" + minutes + ":" + seconds;
-            this.pomodoro_time--;
+            this.timeShow = "" + minutes + ":" + seconds;
+            this.time--;
+        },
+
+        switchTab(tab) {
+            if (this.timmerRunning) {
+                if (confirm("Timer is still running do you want to continue")) {
+                    clearInterval(this.interval);
+                    this.timmerRunning = false;
+
+                    this.tab = tab;
+                    if (tab == 1) {
+                        this.time = 20;
+                    }
+                    if (tab == 2) {
+                        this.time = 5;
+                    }
+                    if (tab == 3) {
+                        this.time = 15;
+                    }
+                    this.updateTime();
+                }
+            } else {
+                this.tab = tab;
+                if (tab == 1) {
+                    this.time = 20;
+                }
+                if (tab == 2) {
+                    this.time = 5;
+                }
+                if (tab == 3) {
+                    this.time = 15;
+                }
+
+                this.updateTime();
+            }
         },
     },
 };

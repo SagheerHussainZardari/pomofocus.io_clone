@@ -21682,14 +21682,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      settingsShow: true,
+      settingsShow: false,
       tab: 1,
-      pomodoro_time: 5,
-      short_break: 0,
-      long_break: 0,
-      pomodoro_time_show: "00:00",
-      pomodoroInterval: null,
-      pomodoroTimmerRunning: false
+      time: 20,
+      timeShow: "00:00",
+      interval: null,
+      timmerRunning: false
     };
   },
   mounted: function mounted() {
@@ -21699,24 +21697,24 @@ __webpack_require__.r(__webpack_exports__);
     startTimer: function startTimer() {
       var _this = this;
 
-      this.pomodoroTimmerRunning = true;
-      this.pomodoroInterval = setInterval(function () {
+      this.timmerRunning = true;
+      this.interval = setInterval(function () {
         _this.updateTime();
       }, 1000);
     },
     stopTimer: function stopTimer() {
-      clearInterval(this.pomodoroInterval);
-      this.pomodoroTimmerRunning = false;
+      clearInterval(this.interval);
+      this.timmerRunning = false;
     },
     updateTime: function updateTime() {
-      if (this.pomodoro_time < 0) {
-        clearInterval(this.pomodoroInterval);
-        alert("Time if finished play sound");
+      if (this.time < 0) {
+        clearInterval(this.interval);
+        this.tab = 2;
         return;
       }
 
-      var minutes = this.pomodoro_time / 60;
-      var seconds = this.pomodoro_time % 60;
+      var minutes = this.time / 60;
+      var seconds = this.time % 60;
       minutes = Math.floor(minutes);
       seconds = Math.floor(seconds);
 
@@ -21728,8 +21726,47 @@ __webpack_require__.r(__webpack_exports__);
         seconds = "0" + seconds;
       }
 
-      this.pomodoro_time_show = "" + minutes + ":" + seconds;
-      this.pomodoro_time--;
+      this.timeShow = "" + minutes + ":" + seconds;
+      this.time--;
+    },
+    switchTab: function switchTab(tab) {
+      if (this.timmerRunning) {
+        if (confirm("Timer is still running do you want to continue")) {
+          clearInterval(this.interval);
+          this.timmerRunning = false;
+          this.tab = tab;
+
+          if (tab == 1) {
+            this.time = 20;
+          }
+
+          if (tab == 2) {
+            this.time = 5;
+          }
+
+          if (tab == 3) {
+            this.time = 15;
+          }
+
+          this.updateTime();
+        }
+      } else {
+        this.tab = tab;
+
+        if (tab == 1) {
+          this.time = 20;
+        }
+
+        if (tab == 2) {
+          this.time = 5;
+        }
+
+        if (tab == 3) {
+          this.time = 15;
+        }
+
+        this.updateTime();
+      }
     }
   }
 });
@@ -21863,7 +21900,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Head = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Head");
 
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Head, {
-    title: $data.pomodoro_time_show
+    title: $data.timeShow
   }, null, 8
   /* PROPS */
   , ["title"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
@@ -21875,28 +21912,28 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-white bg-opacity-30 text-sm text-gray-300 hover:text-white px-3 py-2 cursor-pointer rounded"
   }, " Setting ")]), _hoisted_4]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header End "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Timer Box Start "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     onClick: _cache[1] || (_cache[1] = function ($event) {
-      return $data.tab = 1;
+      return $options.switchTab(1);
     }),
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)($data.tab == 1 ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10' : 'text-white font-semibold px-3 py-1 rounded-md cursor-pointer bg-opacity-10')
   }, " Pomodoro ", 2
   /* CLASS */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     onClick: _cache[2] || (_cache[2] = function ($event) {
-      return $data.tab = 2;
+      return $options.switchTab(2);
     }),
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)($data.tab == 2 ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10' : 'text-white font-semibold px-3 py-1 rounded-md cursor-pointer bg-opacity-10')
   }, " Short Break ", 2
   /* CLASS */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     onClick: _cache[3] || (_cache[3] = function ($event) {
-      return $data.tab = 3;
+      return $options.switchTab(3);
     }),
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)($data.tab == 3 ? 'text-white font-bold bg-gray-900 px-3 py-1 cursor-pointer rounded-md bg-opacity-10' : 'text-white font-semibold px-3 py-1 rounded-md cursor-pointer bg-opacity-10')
   }, " Long Break ", 2
   /* CLASS */
-  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pomodoro_time_show), 1
+  )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.timeShow), 1
   /* TEXT */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [!$data.pomodoroTimmerRunning ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [!$data.timmerRunning ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["font-bold px-16 pb-3 text-[22px] transition-all duration-500", $data.tab == 1 ? 'text-[#D95550]' : $data.tab == 2 ? 'text-[#4c9195]' : 'text-[#457d9f]']),
     onClick: _cache[4] || (_cache[4] = function ($event) {
       return $options.startTimer();
@@ -21919,36 +21956,36 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "number",
     maxlength: "5",
     "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return $data.pomodoro_time = $event;
+      return $data.time = $event;
     }),
     "class": "flex w-full bg-gray-200 outline-none ring-0 border-0 rounded",
     min: "0",
     minlength: "0"
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.pomodoro_time]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.time]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     maxlength: "5",
     "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
-      return $data.short_break = $event;
+      return _ctx.short_break = $event;
     }),
     "class": "flex w-full bg-gray-200 outline-none ring-0 border-0 rounded",
     min: "0",
     minlength: "0"
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.short_break]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.short_break]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     maxlength: "5",
     "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
-      return $data.long_break = $event;
+      return _ctx.long_break = $event;
     }),
     "class": "flex w-full bg-gray-200 outline-none ring-0 border-0 rounded",
     min: "0",
     minlength: "0"
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.long_break]])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Settings Section End ")], 2
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.long_break]])])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Settings Section End ")], 2
   /* CLASS */
   )], 64
   /* STABLE_FRAGMENT */
