@@ -1,5 +1,5 @@
 <template>
-    <Head title="00:00" />
+    <Head :title="pomodoro_time_show" />
     <div
         class="w-screen h-screen transition-all duration-500"
         :class="
@@ -64,7 +64,7 @@
             </div>
 
             <div class="mt-4 text-white text-[120px] text-center font-bold">
-                00:59
+                {{ pomodoro_time_show }}
             </div>
 
             <div class="text-center">
@@ -78,6 +78,7 @@
                                 ? 'text-[#4c9195]'
                                 : 'text-[#457d9f]'
                         "
+                        @click="startTimer()"
                     >
                         Start
                     </h1>
@@ -90,19 +91,76 @@
         <!-- Settings Section Start -->
         <div
             v-if="settingsShow"
-            class="bg-gray-900 flex justify-center bg-opacity-40 p-12 fixed top-0 w-screen min-h-screen"
+            class="bg-gray-900 flex justify-center bg-opacity-40 p-8 fixed top-0 w-screen min-h-screen"
         >
             <div
-                class="w-3/12 m-6 px-4 bg-white rounded-lg break-words h-auto inline-block"
+                class="w-3/12 m-4 px-4 bg-white rounded-lg break-words p-4 h-auto inline-block"
             >
-                <div
-                    class="flex justify-end text-gray-700 text-lg font-bold m-4 cursor-pointer"
-                    @click="settingsShow = !settingsShow"
-                >
-                    X
+                <div class="flex justify-between">
+                    <div
+                        class="flex justify-end text-gray-600 text-lg font-bold m-2 cursor-pointer"
+                    >
+                        TIMER SETTING
+                    </div>
+                    <div
+                        class="flex justify-end text-gray-600 text-lg font-bold m-2 cursor-pointer"
+                        @click="settingsShow = !settingsShow"
+                    >
+                        X
+                    </div>
                 </div>
-                Settings
-                SettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettingsSettings
+                <hr />
+
+                <div class="p-2">
+                    <h1 class="text-black font-semibold">Time (minutes)</h1>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <label
+                                for=""
+                                class="text-gray-400 font-semibold text-sm"
+                                >Pomodoro</label
+                            >
+                            <input
+                                type="number"
+                                maxlength="5"
+                                v-model="pomodoro_time"
+                                class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
+                                min="0"
+                                minlength="0"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                for=""
+                                class="text-gray-400 font-semibold text-sm"
+                                >Short Break</label
+                            >
+                            <input
+                                type="number"
+                                maxlength="5"
+                                v-model="short_break"
+                                class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
+                                min="0"
+                                minlength="0"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                for=""
+                                class="text-gray-400 font-semibold text-sm"
+                                >Long Break</label
+                            >
+                            <input
+                                type="number"
+                                maxlength="5"
+                                v-model="long_break"
+                                class="flex w-full bg-gray-200 outline-none ring-0 border-0 rounded"
+                                min="0"
+                                minlength="0"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Settings Section End -->
@@ -119,9 +177,48 @@ export default {
 
     data() {
         return {
-            settingsShow: false,
+            settingsShow: true,
             tab: 1,
+            pomodoro_time: 5,
+            short_break: 0,
+            long_break: 0,
+            pomodoro_time_show: "00:00",
+            startTimeInterval: null,
         };
+    },
+
+    mounted() {
+        this.updateTime();
+    },
+
+    methods: {
+        startTimer() {
+            this.startTimeInterval = setInterval(() => {
+                this.updateTime();
+            }, 1000);
+        },
+        updateTime() {
+            if (this.pomodoro_time < 0) {
+                clearInterval(this.startTimeInterval);
+                alert("Time if finished play sound");
+                return;
+            }
+            var minutes = this.pomodoro_time / 60;
+            var seconds = this.pomodoro_time % 60;
+
+            minutes = Math.floor(minutes);
+            seconds = Math.floor(seconds);
+
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+
+            this.pomodoro_time_show = "" + minutes + ":" + seconds;
+            this.pomodoro_time--;
+        },
     },
 };
 </script>
