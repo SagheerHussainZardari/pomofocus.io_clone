@@ -68,7 +68,10 @@
             </div>
 
             <div class="text-center">
-                <button class="bg-white mx-auto mt-4 rounded-t-md pt-3">
+                <button
+                    v-if="!pomodoroTimmerRunning"
+                    class="bg-white mx-auto mt-4 rounded-t-md pt-3"
+                >
                     <h1
                         class="font-bold px-16 pb-3 text-[22px] transition-all duration-500"
                         :class="
@@ -81,6 +84,22 @@
                         @click="startTimer()"
                     >
                         Start
+                    </h1>
+                    <div class="bg-gray-200 border-4 w-full"></div>
+                </button>
+                <button v-else class="bg-white mx-auto mt-4 rounded-t-md pt-3">
+                    <h1
+                        class="font-bold px-16 pb-3 text-[22px] transition-all duration-500"
+                        :class="
+                            tab == 1
+                                ? 'text-[#D95550]'
+                                : tab == 2
+                                ? 'text-[#4c9195]'
+                                : 'text-[#457d9f]'
+                        "
+                        @click="stopTimer()"
+                    >
+                        Stop
                     </h1>
                     <div class="bg-gray-200 border-4 w-full"></div>
                 </button>
@@ -183,7 +202,8 @@ export default {
             short_break: 0,
             long_break: 0,
             pomodoro_time_show: "00:00",
-            startTimeInterval: null,
+            pomodoroInterval: null,
+            pomodoroTimmerRunning: false,
         };
     },
 
@@ -193,13 +213,19 @@ export default {
 
     methods: {
         startTimer() {
-            this.startTimeInterval = setInterval(() => {
+            this.pomodoroTimmerRunning = true;
+
+            this.pomodoroInterval = setInterval(() => {
                 this.updateTime();
             }, 1000);
         },
+        stopTimer() {
+            clearInterval(this.pomodoroInterval);
+            this.pomodoroTimmerRunning = false;
+        },
         updateTime() {
             if (this.pomodoro_time < 0) {
-                clearInterval(this.startTimeInterval);
+                clearInterval(this.pomodoroInterval);
                 alert("Time if finished play sound");
                 return;
             }
